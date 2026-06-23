@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 
 import userRoute from "./routes/user.route";
+import uploadRoute from "./routes/upload.route";
+
 
 dotenv.config();
 
@@ -13,6 +15,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", userRoute);
+app.use("/api/v1/upload", uploadRoute);
+app.use("/uploads", express.static("uploads"));
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "API running" });

@@ -6,6 +6,7 @@ export interface IUser {
   dateOfBirth: string;
   gender: "male" | "female" | "other";
   password: string;
+  profileImage?: string;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -15,6 +16,7 @@ const userSchema = new mongoose.Schema<IUser>(
     dateOfBirth: { type: String, required: true },
     gender: { type: String, enum: ["male", "female", "other"], required: true },
     password: { type: String, required: true },
+    profileImage: { type: String, default: "" },
   },
   { timestamps: true }
 );
