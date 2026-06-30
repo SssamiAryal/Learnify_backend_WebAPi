@@ -7,18 +7,52 @@ export interface IUser {
   gender: "male" | "female" | "other";
   password: string;
   profileImage?: string;
+  role: "admin" | "user";
+  status: "active" | "inactive";
 }
 
 const userSchema = new mongoose.Schema<IUser>(
   {
-    fullName: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    dateOfBirth: { type: String, required: true },
-    gender: { type: String, enum: ["male", "female", "other"], required: true },
-    password: { type: String, required: true },
-    profileImage: { type: String, default: "" },
+    fullName: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    dateOfBirth: {
+      type: String,
+      required: true,
+    },
+    gender: {
+      type: String,
+      enum: ["male", "female", "other"],
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    profileImage: {
+      type: String,
+      default: "",
+    },
+    role: {
+      type: String,
+      enum: ["admin", "user"],
+      default: "user",
+    },
+    status: {
+      type: String,
+      enum: ["active", "inactive"],
+      default: "active",
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  }
 );
 
 export const User = mongoose.model<IUser>("User", userSchema);

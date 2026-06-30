@@ -107,4 +107,37 @@ export class UserController {
       return res.status(500).json({ message: "Server error" });
     }
   }
+
+  async updatePassword(req: any, res: Response) {
+    try {
+      const { oldPassword, newPassword } = req.body;
+
+      if (!oldPassword || !newPassword) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+
+      const user = await User.findById(req.user._id);
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+
+      if (!isMatch) {
+        return res.status(400).json({ message: "Old password is incorrect" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      user.password = hashedPassword;
+      await user.save();
+
+      return res.json({
+        message: "Password updated successfully",
+      });
+    } catch (error) {
+      return res.status(500).json({ message: "Server error" });
+    }
+  }
 }

@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 import userRoute from "./routes/user.route";
 import uploadRoute from "./routes/upload.route";
-
+import adminUserRoute from "./routes/admin/user.route";
 
 dotenv.config();
 
@@ -15,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/v1/auth", userRoute);
+app.use("/api/v1/admin/users", adminUserRoute);
 app.use("/api/v1/upload", uploadRoute);
 app.use("/uploads", express.static("uploads"));
 
