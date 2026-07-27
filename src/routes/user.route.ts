@@ -7,7 +7,14 @@ const router = Router();
 const userController = new UserController();
 
 router.post("/register", userController.createUser);
+
 router.post("/login", userController.loginUser);
+
+router.post("/forgot-password", userController.forgotPassword);
+
+router.post("/verify-reset-code", userController.verifyResetCode);
+
+router.post("/reset-password", userController.resetPassword);
 
 router.get("/whoami", authMiddleware, userController.whoami);
 

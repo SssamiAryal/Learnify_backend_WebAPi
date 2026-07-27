@@ -9,6 +9,9 @@ export interface IUser {
   profileImage?: string;
   role: "admin" | "user";
   status: "active" | "inactive";
+
+  resetCode?: string;
+  resetCodeExpiry?: Date;
 }
 
 const userSchema = new mongoose.Schema<IUser>(
@@ -48,6 +51,14 @@ const userSchema = new mongoose.Schema<IUser>(
       type: String,
       enum: ["active", "inactive"],
       default: "active",
+    },
+    resetCode: {
+      type: String,
+      default: "",
+    },
+
+    resetCodeExpiry: {
+      type: Date,
     },
   },
   {

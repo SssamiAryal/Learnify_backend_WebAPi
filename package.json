@@ -4,15 +4,18 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx tsx --watch index.ts",
-    "build": "tsc",
-    "start": "node dist/index.js"
-  },
+  "dev": "npx tsx --watch index.ts",
+  "build": "tsc",
+  "start": "node dist/index.js",
+  "test": "jest",
+  "test:watch": "jest --watch"
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@google/genai": "^2.13.0",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -21,7 +24,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.6.3",
     "multer": "^2.2.0",
-    "ts-jest": "^29.4.11",
+    "nodemailer": "^9.0.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -32,10 +35,12 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.1.0",
     "@types/node": "^25.9.2",
-    "@types/supertest": "^7.2.0",
+    "@types/supertest": "^7.2.1",
     "jest": "^30.4.2",
+    "mongodb-memory-server": "^11.2.0",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2",
+    "ts-jest": "^29.4.12",
     "ts-node": "^10.9.2",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"

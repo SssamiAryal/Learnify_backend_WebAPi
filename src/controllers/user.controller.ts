@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model";
 import { SECRET_KEY } from "../config/constants";
+import { sendResetCode } from "../utils/email";
 
 export class UserController {
   async createUser(req: Request, res: Response) {
@@ -10,13 +11,17 @@ export class UserController {
       const { fullName, email, dateOfBirth, gender, password } = req.body;
 
       if (!fullName || !email || !dateOfBirth || !gender || !password) {
-        return res.status(400).json({ message: "All fields are required" });
+        return res.status(400).json({
+          message: "All fields are required",
+        });
       }
 
       const existingUser = await User.findOne({ email });
 
       if (existingUser) {
-        return res.status(400).json({ message: "Email already exists" });
+        return res.status(400).json({
+          message: "Email already exists",
+        });
       }
 
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -34,7 +39,12 @@ export class UserController {
         user,
       });
     } catch (error) {
-      return res.status(500).json({ message: "Server error" });
+      console.error("REGISTER ERROR:", error);
+
+      return res.status(500).json({
+        message: "Server error",
+        error,
+      });
     }
   }
 
@@ -67,7 +77,7 @@ export class UserController {
         token,
         user,
       });
-    } catch (error) {
+    } catch {
       return res.status(500).json({ message: "Server error" });
     }
   }
@@ -93,17 +103,15 @@ export class UserController {
         updateData.profileImage = req.file.filename;
       }
 
-      const user = await User.findByIdAndUpdate(
-        req.user._id,
-        updateData,
-        { new: true }
-      );
+      const user = await User.findByIdAndUpdate(req.user._id, updateData, {
+        new: true,
+      });
 
       return res.json({
         message: "User updated successfully",
         user,
       });
-    } catch (error) {
+    } catch {
       return res.status(500).json({ message: "Server error" });
     }
   }
@@ -136,8 +144,112 @@ export class UserController {
       return res.json({
         message: "Password updated successfully",
       });
-    } catch (error) {
+    } catch {
       return res.status(500).json({ message: "Server error" });
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({
+          message: "Email is required",
+        });
+      }
+
+      const user: any = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+      user.resetCode = code;
+      await user.save();
+
+      await sendResetCode(email, code);
+
+      return res.json({
+        success: true,
+        message: "Verification code sent successfully",
+      });
+    } catch {
+      return res.status(500).json({
+        message: "Failed to send email",
+      });
+    }
+  }
+
+  async verifyResetCode(req: Request, res: Response) {
+    try {
+      const { email, code } = req.body;
+
+      const user: any = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+
+      if (user.resetCode !== code) {
+        return res.status(400).json({
+          message: "Invalid verification code",
+        });
+      }
+
+      return res.json({
+        success: true,
+        message: "Code verified",
+      });
+    } catch {
+      return res.status(500).json({
+        message: "Server error",
+      });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    try {
+      const { email, newPassword } = req.body;
+
+      if (!email || !newPassword) {
+        return res.status(400).json({
+          message: "Email and password are required",
+        });
+      }
+
+      const user: any = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(404).json({
+          message: "User not found",
+        });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      user.password = hashedPassword;
+      user.resetCode = "";
+
+      await user.save();
+
+      return res.json({
+        success: true,
+        message: "Password reset successfully",
+      });
+    } catch (error) {
+      console.error(error);
+
+      return res.status(500).json({
+        message: "Server error",
+        error,
+      });
     }
   }
 }
